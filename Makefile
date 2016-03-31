@@ -54,20 +54,20 @@ GTEST_SRCS_ = $(GTEST_DIR)/src/*.cc $(GTEST_DIR)/src/*.h $(GTEST_HEADERS)
 # implementation details, the dependencies specified below are
 # conservative and not optimized.  This is fine as Google Test
 # compiles fast and for ordinary users its source rarely changes.
-$(addprefix $(OBJ_DIR)/, gtest-all.o): $(GTEST_SRCS_)
+objs/gtest-all.o: $(GTEST_SRCS_)
 	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) \
             -c $(GTEST_DIR)/src/gtest-all.cc \
 			-o $@
 
-$(addprefix $(OBJ_DIR)/, gtest_main.o) : $(GTEST_SRCS_)
+objs/gtest_main.o : $(GTEST_SRCS_)
 	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) \
             -c $(GTEST_DIR)/src/gtest_main.cc \
 			-o $@
 
-$(addprefix $(OBJ_DIR)/, gtest.a) : $(addprefix $(OBJ_DIR)/, gtest-all.o)
+objs/gtest.a : objs/gtest-all.o
 	$(AR) $(ARFLAGS) $@ $^
 
-$(addprefix $(OBJ_DIR)/, gtest_main.a) : $(addprefix $(OBJ_DIR)/, gtest-all.o) $(addprefix $(OBJ_DIR)/, gtest_main.o)
+objs/gtest_main.a : objs/gtest-all.o objs/gtest_main.o
 	$(AR) $(ARFLAGS) $@ $^
 
 # Builds a sample test.  A test should link with either gtest.a or
@@ -80,10 +80,10 @@ $(TESTS) : $(OBJ_DIR) $(OBJS)
 $(OBJ_DIR):
 	mkdir $@
 
-$(addprefix $(OBJ_DIR)/, sample.o) : sample.cpp sample.h $(GTEST_HEADERS)
+objs/sample.o : sample.cpp sample.h $(GTEST_HEADERS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c sample.cpp -o $@
 
-$(addprefix $(OBJ_DIR)/, sample_unittest.o) : sample.t.cpp sample.h $(GTEST_HEADERS)
+objs/sample_unittest.o : sample.t.cpp sample.h $(GTEST_HEADERS)
 	$(CXX) $(CPPFLAGS)  $(CXXFLAGS) -c sample.t.cpp -o $@
 
 
