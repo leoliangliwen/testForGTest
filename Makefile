@@ -42,7 +42,7 @@ all : $(TESTS)
 
 clean :
 	rm -rf $(OBJ_DIR)
-	rm -f $(TESTS) gtest.a gtest_main.a *.o
+	rm -f $(TESTS)
 
 # Builds gtest.a and gtest_main.a.
 
@@ -55,22 +55,20 @@ GTEST_SRCS_ = $(GTEST_DIR)/src/*.cc $(GTEST_DIR)/src/*.h $(GTEST_HEADERS)
 # conservative and not optimized.  This is fine as Google Test
 # compiles fast and for ordinary users its source rarely changes.
 $(addprefix $(OBJ_DIR)/, gtest-all.o): $(GTEST_SRCS_)
-	@$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) \
+	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) \
             -c $(GTEST_DIR)/src/gtest-all.cc \
 			-o $@
 
 $(addprefix $(OBJ_DIR)/, gtest_main.o) : $(GTEST_SRCS_)
-	@$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) \
+	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) \
             -c $(GTEST_DIR)/src/gtest_main.cc \
 			-o $@
 
 $(addprefix $(OBJ_DIR)/, gtest.a) : $(addprefix $(OBJ_DIR)/, gtest-all.o)
-	@echo "3"
-	@$(AR) $(ARFLAGS) $@ $^
+	$(AR) $(ARFLAGS) $@ $^
 
 $(addprefix $(OBJ_DIR)/, gtest_main.a) : $(addprefix $(OBJ_DIR)/, gtest-all.o) $(addprefix $(OBJ_DIR)/, gtest_main.o)
-	@echo "4"
-	@$(AR) $(ARFLAGS) $@ $^
+	$(AR) $(ARFLAGS) $@ $^
 
 # Builds a sample test.  A test should link with either gtest.a or
 # gtest_main.a, depending on whether it defines its own main()
