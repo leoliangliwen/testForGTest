@@ -9,7 +9,7 @@ int Factorial(int n) {
 
     if (n <= 0)
     {
-        return 0;
+        throw "less than 0";
     }
     int result = 1;
     for (int i = 1; i <= n; i++) {

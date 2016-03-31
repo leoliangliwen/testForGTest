@@ -28,6 +28,9 @@ CXXFLAGS += -g -Wall -Wextra -pthread
 # All tests produced by this Makefile.  Remember to add new tests you
 # created to the list.
 TESTS = UnitTest
+OBJ_DIR = objs
+OBJS = sample.o sample_unittest.o gtest_main.a
+OBJS := $(addprefix $(OBJ_DIR)/, $(OBJS))
 
 # All Google Test headers.  Usually you shouldn't change this
 # definition.
@@ -38,6 +41,7 @@ GTEST_HEADERS = $(GTEST_DIR)/include/gtest/*.h \
 all : $(TESTS)
 
 clean :
+	rm -rf $(OBJ_DIR)
 	rm -f $(TESTS) gtest.a gtest_main.a *.o
 
 # Builds gtest.a and gtest_main.a.
@@ -50,31 +54,38 @@ GTEST_SRCS_ = $(GTEST_DIR)/src/*.cc $(GTEST_DIR)/src/*.h $(GTEST_HEADERS)
 # implementation details, the dependencies specified below are
 # conservative and not optimized.  This is fine as Google Test
 # compiles fast and for ordinary users its source rarely changes.
-gtest-all.o : $(GTEST_SRCS_)
-	@$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) -c \
-            $(GTEST_DIR)/src/gtest-all.cc
+$(addprefix $(OBJ_DIR)/, gtest-all.o): $(GTEST_SRCS_)
+	@$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) \
+            -c $(GTEST_DIR)/src/gtest-all.cc \
+			-o $@
 
-gtest_main.o : $(GTEST_SRCS_)
-	@$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) -c \
-            $(GTEST_DIR)/src/gtest_main.cc
+$(addprefix $(OBJ_DIR)/, gtest_main.o) : $(GTEST_SRCS_)
+	@$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) \
+            -c $(GTEST_DIR)/src/gtest_main.cc \
+			-o $@
 
-gtest.a : gtest-all.o
+$(addprefix $(OBJ_DIR)/, gtest.a) : $(addprefix $(OBJ_DIR)/, gtest-all.o)
+	@echo "3"
 	@$(AR) $(ARFLAGS) $@ $^
 
-gtest_main.a : gtest-all.o gtest_main.o
+$(addprefix $(OBJ_DIR)/, gtest_main.a) : $(addprefix $(OBJ_DIR)/, gtest-all.o) $(addprefix $(OBJ_DIR)/, gtest_main.o)
+	@echo "4"
 	@$(AR) $(ARFLAGS) $@ $^
 
 # Builds a sample test.  A test should link with either gtest.a or
 # gtest_main.a, depending on whether it defines its own main()
 # function.
 
-$(TESTS) : sample.o sample_unittest.o gtest_main.a
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
+$(TESTS) : $(OBJ_DIR) $(OBJS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread  -o $@ $(OBJS) 
 
-sample.o : sample.cpp sample.h $(GTEST_HEADERS)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c sample.cpp
+$(OBJ_DIR):
+	mkdir $@
 
-sample_unittest.o : sample.t.cpp sample.h $(GTEST_HEADERS)
-	$(CXX) $(CPPFLAGS)  $(CXXFLAGS) -o $@ -c sample.t.cpp
+$(addprefix $(OBJ_DIR)/, sample.o) : sample.cpp sample.h $(GTEST_HEADERS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c sample.cpp -o $@
+
+$(addprefix $(OBJ_DIR)/, sample_unittest.o) : sample.t.cpp sample.h $(GTEST_HEADERS)
+	$(CXX) $(CPPFLAGS)  $(CXXFLAGS) -c sample.t.cpp -o $@
 
 
