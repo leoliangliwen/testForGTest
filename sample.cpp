@@ -7,9 +7,9 @@
 // Returns n! (the factorial of n).  For negative n, n! is defined to be 1.
 int Factorial(int n) {
 
-    if (n <= 0)
+    if (n == 0)
     {
-        throw "less than 0";
+        throw 0;
     }
     int result = 1;
     for (int i = 1; i <= n; i++) {
