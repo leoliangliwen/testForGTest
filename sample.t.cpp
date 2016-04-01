@@ -52,3 +52,15 @@ TEST(FactorialTest, Positive) {
     EXPECT_EQ(6, Factorial(3));
     EXPECT_EQ(40320, Factorial(8));
 }
+
+
+class ParTest : public testing::TestWithParam<int>
+{
+};
+
+TEST_P(ParTest, Negative) {
+    int n =GetParam();
+    EXPECT_EQ(1, Factorial(n));
+}
+
+INSTANTIATE_TEST_CASE_P(Default, ParTest, testing::Values(-1, -2, -3, -4));
